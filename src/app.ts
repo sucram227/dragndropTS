@@ -65,6 +65,18 @@ enum ProjectStatus { Active, Finished }
 
 type Listener<T> = (items: T[]) => void;
 
+//Drag And Drop Interfaces
+interface Draggable {
+    dragStartHandler(event: DragEvent): void;
+    dragEndHandler(event: DragEvent): void;
+}
+
+interface DragTarget {
+    dragOverHandler(event: DragEvent): void;
+    dropHandler(event: DragEvent): void;
+    dragLeaveHandler(event: DragEvent): void;
+}
+
 //Helpers
 function validate(validatableInput: Validatable) {
     let isValid = true;
@@ -134,7 +146,7 @@ abstract class Component<T extends HTMLElement, U extends HTMLElement> {
     abstract renderContent(): void;
 }
 
-class ProjectItem extends Component<HTMLUListElement, HTMLLIElement> {
+class ProjectItem extends Component<HTMLUListElement, HTMLLIElement> implements Draggable {
     private project: Project;
 
     get persons() {
@@ -153,7 +165,18 @@ class ProjectItem extends Component<HTMLUListElement, HTMLLIElement> {
         this.renderContent();
     }
 
+    @autoBind
+    dragStartHandler(event: DragEvent): void {
+        console.log(event);
+    }
+
+    dragEndHandler(_: DragEvent): void {
+        console.log('DragEnd');
+    }
+
     configure() {
+        this.element.addEventListener('dragstart', this.dragStartHandler);
+        this.element.addEventListener('dragend', this.dragEndHandler);
     }
 
     renderContent() {
